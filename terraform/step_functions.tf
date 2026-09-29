@@ -29,7 +29,7 @@ resource "aws_sfn_state_machine" "claims_pipeline" {
   })
 
   logging_configuration {
-    level           = "ALL"
+    level                  = "ALL"
     include_execution_data = true
   }
 }

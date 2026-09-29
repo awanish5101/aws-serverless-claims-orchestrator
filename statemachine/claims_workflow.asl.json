@@ -1,0 +1,66 @@
+{
+  "Comment": "AWS Serverless Claims Orchestration Pipeline State Machine",
+  "StartAt": "ValidateClaim",
+  "States": {
+    "ValidateClaim": {
+      "Type": "Task",
+      "Resource": "${ValidateClaimLambdaArn}",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Next": "CheckValidation"
+    },
+    "CheckValidation": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.validation_passed",
+          "BooleanEquals": false,
+          "Next": "RejectClaim"
+        }
+      ],
+      "Default": "ExtractDocuments"
+    },
+    "ExtractDocuments": {
+      "Type": "Task",
+      "Resource": "${DocumentProcessorLambdaArn}",
+      "Retry": [
+        {
+          "ErrorEquals": ["States.TaskFailed"],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 2,
+          "BackoffRate": 1.5
+        }
+      ],
+      "Next": "TriageWithBedrockAI"
+    },
+    "TriageWithBedrockAI": {
+      "Type": "Task",
+      "Resource": "${BedrockTriageLambdaArn}",
+      "Retry": [
+        {
+          "ErrorEquals": ["ThrottlingException", "InternalServerException"],
+          "IntervalSeconds": 3,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Next": "FinalizeSettlement"
+    },
+    "FinalizeSettlement": {
+      "Type": "Task",
+      "Resource": "${SettlementLambdaArn}",
+      "End": true
+    },
+    "RejectClaim": {
+      "Type": "Task",
+      "Resource": "${SettlementLambdaArn}",
+      "End": true
+    }
+  }
+}

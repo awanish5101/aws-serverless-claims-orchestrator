@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: java-claims-service
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+aws:
+  region: us-east-1
+  dynamodb:
+    table-name: claims_ledger
+  sfn:
+    state-machine-arn: arn:aws:states:us-east-1:123456789012:stateMachine:ClaimsOrchestrationWorkflow

@@ -222,10 +222,10 @@ terraform fmt -check
 ```json
 {
   "policy_number": "POL-98765432",
-  "insured_name": "Jane Doe",
+  "insured_name": "Paul",
   "claim_type": "AUTO",
   "incident_date": "2026-09-25",
-  "incident_location": "Bloomington, IL",
+  "incident_location": "Delhi",
   "incident_description": "Rear-ended at traffic signal. Front bumper cracked and radiator leaking.",
   "estimated_damage_amount": 4200.0,
   "documents": [
